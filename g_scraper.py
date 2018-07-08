@@ -36,7 +36,7 @@ def error_log(error_word):
     email_func(error_word)
 
 
-def djson(crnt_result, crnt_word, crnt_rank, crnt_rank_no_ads, desc, cvname):
+def djson(crnt_word, crnt_result, crnt_rank, crnt_rank_no_ads, desc, cvname, isad):
 
     stamp_1 = datetime.now()
     stamp_1 = str(stamp_1)
@@ -53,23 +53,21 @@ def djson(crnt_result, crnt_word, crnt_rank, crnt_rank_no_ads, desc, cvname):
     data['rank'] = crnt_rank+crnt_rank_no_ads
     data['rankExcludingAds'] = crnt_rank_no_ads
     data['search'] = crnt_word
-    data['isAd'] = 'False'
+    data['isAd'] = isad
     data['timestamp'] = stamp_1
     data['url'] = var2
     data['description'] = desc
 
-    
-    output_path1 = output_path1+cvname
-    
-    with open(output_path1+'/data1.json', 'a', encoding='utf8', newline='') as jsonfile:
+
+    #output_path1 = output_path1+cvname
+    namecssv = 'data'+cvname+'.json'
+
+    with open(namecssv, 'a', encoding='utf8', newline='') as jsonfile:
         json.dump(data, jsonfile)
+        jsonfile.write('\n')
         jsonfile.close()
 
-    output_path2 = output_path1+stamp_1
 
-    with open(output_path2+'/data1.json', 'a', encoding='utf8', newline='') as jsonfile:
-        json.dump(data, jsonfile)
-        jsonfile.close()
 
 def error_retry(driver2, error, counter2):
     print('The keyword '+error+' appeared to have a problem')  #returns the problem, changes the ip and retries 5 times | new options in general
@@ -82,7 +80,7 @@ def error_retry(driver2, error, counter2):
         btn = driver2.find_element_by_xpath('//*[@id="lst-ib"]')
         if btn is not None:
             return 'break'
-    except:
+    except NoSuchElementException:
         driver2.quit()
         if counter2 == 5:
             error_log(error)
@@ -110,16 +108,16 @@ def search(word, counter, driver1, cvar):
         except NoSuchElementException:
             pass
         if button != 'fail':
-            r = randint(5, 9)
+            r = randint(90, 111)
             time.sleep(r)
             if counter > 1:
                 button.send_keys(Keys.CONTROL + "a")
             button.send_keys(word)
-            r = randint(9, 12)
+            r = randint(15, 20)
             time.sleep(r)
             button = driver1.find_element_by_xpath('//*[@id="lst-ib"]')
             button.send_keys(u'\ue007')
-            r = randint(5, 8)
+            r = randint(10, 13)
             time.sleep(r)
             html = driver1.page_source
             soup = BeautifulSoup(html, 'html.parser')
@@ -149,7 +147,8 @@ def search(word, counter, driver1, cvar):
                 for resultad in resultsad:
                     print(resultad.text)
                     print(ads_counter)
-                    djson(word, resultad, ads_counter, results_counter, desc_ad, cvar)  # calls the function that passes everything to the json file
+                    advar = 'True'
+                    djson(word, resultad, ads_counter, results_counter, desc_ad, cvar, advar)  # calls the function that passes everything to the json file
                     ads_counter += 1
 
             try:
@@ -176,23 +175,27 @@ def search(word, counter, driver1, cvar):
             else:
                 results_counter = 1  # Counter for the real results
                 for result in results:
-                    description = result.find('span', {'class': 'st'})
+                    description = result.find('span', {'class': 'st'}).text
                     result = result.find('h3', {'class': 'r'})
                     print(results_counter)
                     print(result.text)
+                    print(description)
                     print(result.find('a').get('href'))
-                    djson(word, result, ads_counter, results_counter, description, cvar)  # calls the function that passes everything to the json file
+                    advar = 'False'
+                    djson(word, result, ads_counter, results_counter, description, cvar, advar)  # calls the function that passes everything to the json file
                     results_counter += 1
 
                 if len(testresults) > 1:
                     for testresult in testresults[1]:
-                        results_counter += 1
+                        description = testresult.find('span', {'class': 'st'}).text
                         testresult = testresult.find('h3', {'class': 'r'})
                         print('second group ' + str(results_counter))
+                        print(description)
                         print(testresult.text)
                         print(testresult.find('a').get('href'))
-                        djson(word, testresult, results_counter, description, cvar)  # If for some reason the keywords are correlated to news as i explained there are 2 divs with results so it again calls the function that passes everything to the json file
-
+                        advar = 'False'
+                        djson(word, testresult, ads_counter, results_counter, description, cvar, advar)  # If for some reason the keywords are correlated to news as i explained there are 2 divs with results so it again calls the function that passes everything to the json file
+                        results_counter += 1
 
             srch = False
 
@@ -201,8 +204,10 @@ def search(word, counter, driver1, cvar):
             while t <=5 or b=='asdf':
                 b = error_retry(driver1, word, t)  # if the script opens up google it breaks the loop
                 t += 1
-
-            srch = False  # proceeds to next word
+            if b == 'break':
+                srch = True
+            else:
+                srch = False  # proceeds to next word
 
 
 
@@ -211,13 +216,13 @@ def search(word, counter, driver1, cvar):
 def start(keywords):  # Takes each list and starts looping through the keywords
     opts = Options()  # Gives chrome basic settings and opens it
     opts.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36")
-    driver = webdriver.Chrome("", chrome_options=opts)
+    driver = webdriver.Chrome("C:/Users/alexel_t91/Downloads/chromedriver_win32/chromedriver.exe", chrome_options=opts)
     driver.get("https://google.com")  # opens up chrome - google
     agent = driver.execute_script("return navigator.userAgent")
     print(agent)
     i = 1
     for keyword in keywords:  # The part that it starts looping through keywords
-        if i == 1:  # The first time it takes the time and parses it to a var to create 1 json per instance
+        if i == 1:
             sepc = '.'
             csvar = datetime.now()
             csvar = str(csvar)
@@ -230,16 +235,16 @@ def start(keywords):  # Takes each list and starts looping through the keywords
 
 
 userlist = []
-with open('', 'r') as userfile:  # Reads from the csv the main list with all the keywords
+with open('C:/Users/alexel_t91/Desktop/asdf.csv', 'r') as userfile:  # Reads from the csv the main list with all the keywords
     userfilereader = csv.reader(userfile)
     for col in userfilereader:
         userlist.append(col)
 
-with open('', 'r') as userfile1:  # Reads from the csv the number of instances
+with open('C:/Users/alexel_t91/Desktop/asdf.csv') as userfile1:  # Reads from the csv the number of instances
     reader = csv.reader(userfile1)
     num_of_instances = [row for idx, row in enumerate(reader) if idx == 1]
 
-with open('', 'r') as userfile2:  # Reads from the csv the path that you want the program to save the main json file
+with open('C:/Users/alexel_t91/Desktop/asdf.csv') as userfile2:  # Reads from the csv the path that you want the program to save the main json file
     reader = csv.reader(userfile2)
     output_path = [row for idx, row in enumerate(reader) if idx == 2]
 
@@ -281,10 +286,10 @@ for i in range(0, len(actual_list)):
 
 
 
-#pool = Pool(3)
-#pool.map(start, (actual_list1, actual_list2, actual_list3))  # opens up 7 instances of chrome
-#pool.close()
-#pool.join()
+pool = Pool(3)
+pool.map(start, (actual_list1, actual_list2, actual_list3))  # opens up 7 instances of chrome
+pool.close()
+pool.join()
 
 
 userfile.close()
