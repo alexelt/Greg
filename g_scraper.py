@@ -324,7 +324,6 @@ if __name__ == "__main__":
     pool.close()
     pool.join()
 
-
     userfile.close()
     userfile1.close()
     userfile2.close()
