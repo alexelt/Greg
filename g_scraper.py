@@ -233,14 +233,19 @@ def search(word, counter, driver1, cvar):
 
 
 
-def start(keywords):  # Takes each list and starts looping through the keywords
+def start(a_list):  # Takes each list and starts looping through the keywords
+    proxy = a_list[0]
     opts = Options()  # Gives chrome basic settings and opens it
+    opts.add_argument('--proxy-server=%s' % PROXY)
     opts.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36")
-    driver = webdriver.Chrome("C:/Users/alexel_t91/Downloads/chromedriver_win32/chromedriver.exe", chrome_options=opts)
+    driver = webdriver.Chrome("", chrome_options=opts)
     driver.get("https://google.com")  # opens up chrome - google
     agent = driver.execute_script("return navigator.userAgent")
     print(agent)
     i = 1
+    keywords = []
+    for i in range(1,len(a_list)):
+        keywords.append(a_list[i])
     for keyword in keywords:  # The part that it starts looping through keywords
         if i == 1:
             sepc = '.'
@@ -300,6 +305,9 @@ if __name__ == "__main__":
     actual_list1 = []
     actual_list2 = []
     actual_list3 = []
+    actual_list1.append('proxy1')
+    actual_list2.append('proxy2')
+    actual_list3.append('proxy3')
     for i in range(0, len(actual_list)):
         if i < divider:
             actual_list1.append(actual_list[i])
@@ -321,16 +329,3 @@ if __name__ == "__main__":
     userfile1.close()
     userfile2.close()
     merge()
-
-
-'''
-
-
-
-proxy = "00.00.00.00:7899" 
-
-chr_options = Options()
-chr_options.add_argument('--proxy-server=%s' % PROXY)
-
-
-'''
