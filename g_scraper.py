@@ -11,6 +11,7 @@ import time
 import csv
 import ast
 import json
+import glob
 
 
 
@@ -45,9 +46,16 @@ def djson(crnt_word, crnt_result, crnt_rank, crnt_rank_no_ads, desc, cvname, isa
     stamp_1 = stamp_1.replace(' ', '__')
     sep_1 = '.'
     stamp_1 = stamp_1.split(sep_1, 1)[0]  # The time stamp
-
-    var2 = crnt_result.find('a').get('href')
-    var3 = crnt_result.text
+    var2 = None
+    var3 = None
+    try:
+        var2 = crnt_result.find('a').get('href')
+    except:
+        pass
+    try:
+        var3 = crnt_result.text
+    except:
+        pass
     data = {}
     data['title'] = var3
     data['rank'] = crnt_rank+crnt_rank_no_ads
@@ -108,16 +116,16 @@ def search(word, counter, driver1, cvar):
         except NoSuchElementException:
             pass
         if button != 'fail':
-            r = randint(90, 111)
+            r = randint(10, 11)
             time.sleep(r)
             if counter > 1:
                 button.send_keys(Keys.CONTROL + "a")
             button.send_keys(word)
-            r = randint(15, 20)
+            r = randint(2, 3)
             time.sleep(r)
             button = driver1.find_element_by_xpath('//*[@id="lst-ib"]')
             button.send_keys(u'\ue007')
-            r = randint(10, 13)
+            r = randint(1, 3)
             time.sleep(r)
             html = driver1.page_source
             soup = BeautifulSoup(html, 'html.parser')
@@ -175,8 +183,14 @@ def search(word, counter, driver1, cvar):
             else:
                 results_counter = 1  # Counter for the real results
                 for result in results:
-                    description = result.find('span', {'class': 'st'}).text
-                    result = result.find('h3', {'class': 'r'})
+                    try:
+                        description = result.find('span', {'class': 'st'}).text
+                    except:
+                        pass
+                    try:
+                        result = result.find('h3', {'class': 'r'})
+                    except:
+                        pass
                     print(results_counter)
                     print(result.text)
                     print(description)
@@ -187,8 +201,14 @@ def search(word, counter, driver1, cvar):
 
                 if len(testresults) > 1:
                     for testresult in testresults[1]:
-                        description = testresult.find('span', {'class': 'st'}).text
-                        testresult = testresult.find('h3', {'class': 'r'})
+                        try:
+                            description = testresult.find('span', {'class': 'st'}).text
+                        except:
+                            pass
+                        try:
+                            testresult = testresult.find('h3', {'class': 'r'})
+                        except:
+                            pass
                         print('second group ' + str(results_counter))
                         print(description)
                         print(testresult.text)
@@ -231,71 +251,76 @@ def start(keywords):  # Takes each list and starts looping through the keywords
         i += 1
 
 
-
-
-
-userlist = []
-with open('C:/Users/alexel_t91/Desktop/asdf.csv', 'r') as userfile:  # Reads from the csv the main list with all the keywords
-    userfilereader = csv.reader(userfile)
-    for col in userfilereader:
-        userlist.append(col)
-
-with open('C:/Users/alexel_t91/Desktop/asdf.csv') as userfile1:  # Reads from the csv the number of instances
-    reader = csv.reader(userfile1)
-    num_of_instances = [row for idx, row in enumerate(reader) if idx == 1]
-
-with open('C:/Users/alexel_t91/Desktop/asdf.csv') as userfile2:  # Reads from the csv the path that you want the program to save the main json file
-    reader = csv.reader(userfile2)
-    output_path = [row for idx, row in enumerate(reader) if idx == 2]
-
-actual_list = ast.literal_eval(str(userlist[0]))
-output_path1 = str(output_path[0])
-
-x = num_of_instances[0]
-x = ''.join(x)
-number_of_instances = int(x)  # The number of chrome instances
-
-stamp = datetime.now()
-stamp = str(stamp)
-stamp = stamp.replace('-', '_')
-stamp = stamp.replace(':', '_')
-stamp = stamp.replace(' ', '__')
-sep = '.'
-stamp = stamp.split(sep, 1)[0] # The time stamp
-
-
-output_path1 = str(output_path1)[2:-2]  # The path tha you want the main json to be stored
-print(output_path1+stamp)  # for each new json and raw html
-
-
-divider = len(actual_list)//number_of_instances
-actual_list1 = []
-actual_list2 = []
-actual_list3 = []
-for i in range(0, len(actual_list)):
-    if i < divider:
-        actual_list1.append(actual_list[i])
-        #print('actual_list1 '+str(i))
-    elif i >= (divider-1) and (i <= (divider*2)-1):  # It creates 7 lists in this variation but you can st as many as you'd want
-        actual_list2.append(actual_list[i])
-        #print('actual_list2 '+str(i))
-    elif (i >= 5):
-        actual_list3.append(actual_list[i])
-        #print('actual_list3 '+str(i))
+def merge():
+    read_files = glob.glob("*.json")
+    with open("merged_file3.json", "w") as outfile:
+        outfile.write('{}'.format(''.join([open(f, "r").read() for f in read_files])))
 
 
 
 
-pool = Pool(3)
-pool.map(start, (actual_list1, actual_list2, actual_list3))  # opens up 7 instances of chrome
-pool.close()
-pool.join()
 
 
-userfile.close()
-userfile1.close()
-userfile2.close()
+if __name__ == "__main__":
+    userlist = []
+    with open('', 'r') as userfile:  # Reads from the csv the main list with all the keywords
+        userfilereader = csv.reader(userfile)
+        for col in userfilereader:
+            userlist.append(col)
 
+    with open('C:/Users/alexel_t91/Desktop/asdf.csv') as userfile1:  # Reads from the csv the number of instances
+        reader = csv.reader(userfile1)
+        num_of_instances = [row for idx, row in enumerate(reader) if idx == 1]
+
+    with open('C:/Users/alexel_t91/Desktop/asdf.csv') as userfile2:  # Reads from the csv the path that you want the program to save the main json file
+        reader = csv.reader(userfile2)
+        output_path = [row for idx, row in enumerate(reader) if idx == 2]
+
+    actual_list = ast.literal_eval(str(userlist[0]))
+    output_path1 = str(output_path[0])
+
+    x = num_of_instances[0]
+    x = ''.join(x)
+    number_of_instances = int(x)  # The number of chrome instances
+
+    stamp = datetime.now()
+    stamp = str(stamp)
+    stamp = stamp.replace('-', '_')
+    stamp = stamp.replace(':', '_')
+    stamp = stamp.replace(' ', '__')
+    sep = '.'
+    stamp = stamp.split(sep, 1)[0] # The time stamp
+
+
+    output_path1 = str(output_path1)[2:-2]  # The path that you want the main json to be stored
+    print(output_path1+stamp)  # for each new json and raw html
+
+
+    divider = len(actual_list)//number_of_instances
+    actual_list1 = []
+    actual_list2 = []
+    actual_list3 = []
+    for i in range(0, len(actual_list)):
+        if i < divider:
+            actual_list1.append(actual_list[i])
+        elif i < (divider*2):
+            actual_list2.append(actual_list[i])
+        else:
+            actual_list3.append(actual_list[i])
+
+
+
+
+    pool = Pool(3)
+    pool.map(start, (actual_list1, actual_list2, actual_list3))  # opens up 7 instances of chrome
+    pool.close()
+    pool.join()
+
+
+    userfile.close()
+    userfile1.close()
+    userfile2.close()
+    merge()
 
 
 '''
