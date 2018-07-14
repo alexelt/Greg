@@ -236,24 +236,24 @@ def search(word, counter, driver1, cvar):
 def start(a_list):  # Takes each list and starts looping through the keywords
     proxy = a_list[0]
     opts = Options()  # Gives chrome basic settings and opens it
-    opts.add_argument('--proxy-server=%s' % PROXY)
+    #opts.add_argument('--proxy-server=%s' % PROXY)
     opts.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36")
-    driver = webdriver.Chrome("", chrome_options=opts)
+    driver = webdriver.Chrome("C:/Users/arxitektonissa/Downloads/chromedriver_win32/chromedriver.exe", chrome_options=opts)
     driver.get("https://google.com")  # opens up chrome - google
     agent = driver.execute_script("return navigator.userAgent")
     print(agent)
-    i = 1
+    j = 1
     keywords = []
     for i in range(1,len(a_list)):
         keywords.append(a_list[i])
     for keyword in keywords:  # The part that it starts looping through keywords
-        if i == 1:
+        if j == 1:
             sepc = '.'
             csvar = datetime.now()
             csvar = str(csvar)
             csvar = csvar.split(sepc, 1)[1]
-        search(keyword, i, driver, csvar)
-        i += 1
+        search(keyword, j, driver, csvar)
+        j += 1
 
 
 def merge():
@@ -268,16 +268,16 @@ def merge():
 
 if __name__ == "__main__":
     userlist = []
-    with open('', 'r') as userfile:  # Reads from the csv the main list with all the keywords
+    with open('C:/Users/arxitektonissa/Downloads/asdf.csv', 'r', encoding='utf-8') as userfile:  # Reads from the csv the main list with all the keywords
         userfilereader = csv.reader(userfile)
         for col in userfilereader:
             userlist.append(col)
 
-    with open('C:/Users/alexel_t91/Desktop/asdf.csv') as userfile1:  # Reads from the csv the number of instances
+    with open('C:/Users/arxitektonissa/Downloads/asdf.csv') as userfile1:  # Reads from the csv the number of instances
         reader = csv.reader(userfile1)
         num_of_instances = [row for idx, row in enumerate(reader) if idx == 1]
 
-    with open('C:/Users/alexel_t91/Desktop/asdf.csv') as userfile2:  # Reads from the csv the path that you want the program to save the main json file
+    with open('C:/Users/arxitektonissa/Downloads/asdf.csv') as userfile2:  # Reads from the csv the path that you want the program to save the main json file
         reader = csv.reader(userfile2)
         output_path = [row for idx, row in enumerate(reader) if idx == 2]
 
@@ -296,10 +296,8 @@ if __name__ == "__main__":
     sep = '.'
     stamp = stamp.split(sep, 1)[0] # The time stamp
 
-
     output_path1 = str(output_path1)[2:-2]  # The path that you want the main json to be stored
     print(output_path1+stamp)  # for each new json and raw html
-
 
     divider = len(actual_list)//number_of_instances
     actual_list1 = []
@@ -316,11 +314,8 @@ if __name__ == "__main__":
         else:
             actual_list3.append(actual_list[i])
 
-
-
-
     pool = Pool(3)
-    pool.map(start, (actual_list1, actual_list2, actual_list3))  # opens up 7 instances of chrome
+    pool.map(start, (actual_list1, actual_list2, actual_list3))  # opens up 3 instances of chrome
     pool.close()
     pool.join()
 
@@ -328,3 +323,4 @@ if __name__ == "__main__":
     userfile1.close()
     userfile2.close()
     merge()
+
