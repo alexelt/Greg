@@ -241,7 +241,7 @@ def start(a_list):  # Takes each list and starts looping through the keywords
     opts = Options()  # Gives chrome basic settings and opens it
     #opts.add_argument('--proxy-server=%s' % PROXY)
     opts.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36")
-    driver = webdriver.Chrome("C:/Users/arxitektonissa/Downloads/chromedriver_win32/chromedriver.exe", chrome_options=opts)
+    driver = webdriver.Chrome("", chrome_options=opts)
     driver.get("https://google.com")  # opens up chrome - google
     agent = driver.execute_script("return navigator.userAgent")
     print(agent)
@@ -259,7 +259,7 @@ def start(a_list):  # Takes each list and starts looping through the keywords
         j += 1
 
 
-def merge():
+def merge():  # merges the jsons into one
     read_files = glob.glob("*.json")
     with open("merged_file3.json", "w") as outfile:
         outfile.write('{}'.format(''.join([open(f, "r").read() for f in read_files])))
@@ -271,16 +271,16 @@ def merge():
 
 if __name__ == "__main__":
     userlist = []
-    with open('C:/Users/arxitektonissa/Downloads/asdf.csv', 'r', encoding='utf-8') as userfile:  # Reads from the csv the main list with all the keywords
+    with open('', 'r', encoding='utf-8') as userfile:  # Reads from the csv the main list with all the keywords
         userfilereader = csv.reader(userfile)
         for col in userfilereader:
             userlist.append(col)
 
-    with open('C:/Users/arxitektonissa/Downloads/asdf.csv') as userfile1:  # Reads from the csv the number of instances
+    with open('') as userfile1:  # Reads from the csv the number of instances
         reader = csv.reader(userfile1)
         num_of_instances = [row for idx, row in enumerate(reader) if idx == 1]
 
-    with open('C:/Users/arxitektonissa/Downloads/asdf.csv') as userfile2:  # Reads from the csv the path that you want the program to save the main json file
+    with open('') as userfile2:  # Reads from the csv the path that you want the program to save the main json file
         reader = csv.reader(userfile2)
         output_path = [row for idx, row in enumerate(reader) if idx == 2]
 
