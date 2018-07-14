@@ -139,7 +139,7 @@ def search(word, counter, driver1, cvar):
             try:
                 resultsad = soup.find('div', {"class": 'C4eCVc c'})
                 try:
-                    resultsad = resultsad.findAll('h3', {'class': 'r'})  # Searches for the ads
+                    resultsad = resultsad.findAll('li', {'class': 'ads-ad'})  # Searches for the ads
                 except:
                     resultsad = 'wrong'
                     pass
@@ -153,11 +153,14 @@ def search(word, counter, driver1, cvar):
             else:
                 ads_counter = 1  # Counter for the ad results
                 for resultad in resultsad:
-                    print(resultad.text)
+                    adname = resultad.find('h3').text
+                    print(adname)
                     print(ads_counter)
                     advar = 'True'
-                    djson(word, resultad, ads_counter, results_counter, desc_ad, cvar, advar)  # calls the function that passes everything to the json file
+                    djson(word, adname, ads_counter, results_counter, desc_ad, cvar, advar)  # calls the function that passes everything to the json file
                     ads_counter += 1
+
+            ads_counter = ads_counter-1
 
             try:
                 # Searches for the regular results, because of some new google features the results are often split by news etc so it searches for all the regular classes
