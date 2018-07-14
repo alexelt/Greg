@@ -105,28 +105,39 @@ def search(word, counter, driver1, cvar):
     final_output = output_path1+raw
 
     result = None
-    resultad = None
+    resultad = None  # Resets the values of the variables 
     desc_ad = None
     description = None
 
     while srch == True:
         try:
-            driver1.find_element_by_xpath('//*[@id="lst-ib"]')
+            driver1.find_element_by_xpath('//*[@id="lst-ib"]')  # Checks if there is the element and then saves it to a var to click it
             button = driver1.find_element_by_xpath('//*[@id="lst-ib"]')
         except NoSuchElementException:
+            t = 1
+                while t <= 5 or b == 'asdf':
+                    b = error_retry(driver1, word, t)  # if the script opens up google it breaks the loop
+                    t += 1
             pass
         if button != 'fail':
             r = randint(100, 110)
             r1 = randint(r, 140)
             time.sleep(r1)
             if counter > 1:
-                button.send_keys(Keys.CONTROL + "a")
+                button.send_keys(Keys.CONTROL + "a")  # after the second keyword it presses ctrl+a and then rewrittes
             button.send_keys(word)
             r = randint(20, 35)
             r1 = randint(r, 60)
             time.sleep(r1)
-            button = driver1.find_element_by_xpath('//*[@id="lst-ib"]')
-            button.send_keys(u'\ue007')
+            try:
+                button = driver1.find_element_by_xpath('//*[@id="lst-ib"]')
+                button.send_keys(u'\ue007')
+            except NoSuchElementException:
+                t = 1
+                while t <= 5 or b == 'asdf':
+                    b = error_retry(driver1, word, t)  # if the script opens up google it breaks the loop
+                    t += 1
+                pass
             r = randint(r1, 100)
             time.sleep(r)
             html = driver1.page_source
@@ -244,7 +255,7 @@ def start(a_list):  # Takes each list and starts looping through the keywords
     opts = Options()  # Gives chrome basic settings and opens it
     #opts.add_argument('--proxy-server=%s' % PROXY)
     opts.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36")
-    driver = webdriver.Chrome("", chrome_options=opts)
+    driver = webdriver.Chrome("", chrome_options=opts)  # Put here the path of your chromedriver
     driver.get("https://google.com")  # opens up chrome - google
     agent = driver.execute_script("return navigator.userAgent")
     print(agent)
@@ -264,7 +275,7 @@ def start(a_list):  # Takes each list and starts looping through the keywords
 
 def merge():  # merges the jsons into one
     read_files = glob.glob("*.json")
-    with open("merged_file3.json", "w") as outfile:
+    with open("merged_file3.json", "w") as outfile:  # Change the name of your json file to whatever you want to
         outfile.write('{}'.format(''.join([open(f, "r").read() for f in read_files])))
 
 
@@ -274,16 +285,17 @@ def merge():  # merges the jsons into one
 
 if __name__ == "__main__":
     userlist = []
-    with open('', 'r', encoding='utf-8') as userfile:  # Reads from the csv the main list with all the keywords
+    csv_path = ''  # Type the path of your csv
+    with open(csv_path, 'r', encoding='utf-8') as userfile:  # Reads from the csv the main list with all the keywords
         userfilereader = csv.reader(userfile)
         for col in userfilereader:
             userlist.append(col)
 
-    with open('') as userfile1:  # Reads from the csv the number of instances
+    with open(csv_path, 'r', encoding='utf-8') as userfile1:  # Reads from the csv the number of instances
         reader = csv.reader(userfile1)
         num_of_instances = [row for idx, row in enumerate(reader) if idx == 1]
 
-    with open('') as userfile2:  # Reads from the csv the path that you want the program to save the main json file
+    with open(csv_path, 'r', encoding='utf-8') as userfile2:  # Reads from the csv the path that you want the program to save the main json file
         reader = csv.reader(userfile2)
         output_path = [row for idx, row in enumerate(reader) if idx == 2]
 
@@ -309,7 +321,7 @@ if __name__ == "__main__":
     actual_list1 = []
     actual_list2 = []
     actual_list3 = []
-    actual_list1.append('proxy1')
+    actual_list1.append('proxy1')  # These are the proxies
     actual_list2.append('proxy2')
     actual_list3.append('proxy3')
     for i in range(0, len(actual_list)):
