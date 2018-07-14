@@ -116,16 +116,18 @@ def search(word, counter, driver1, cvar):
         except NoSuchElementException:
             pass
         if button != 'fail':
-            r = randint(10, 11)
-            time.sleep(r)
+            r = randint(100, 110)
+            r1 = randint(r, 140)
+            time.sleep(r1)
             if counter > 1:
                 button.send_keys(Keys.CONTROL + "a")
             button.send_keys(word)
-            r = randint(2, 3)
-            time.sleep(r)
+            r = randint(20, 35)
+            r1 = randint(r, 60)
+            time.sleep(r1)
             button = driver1.find_element_by_xpath('//*[@id="lst-ib"]')
             button.send_keys(u'\ue007')
-            r = randint(1, 3)
+            r = randint(r1, 100)
             time.sleep(r)
             html = driver1.page_source
             soup = BeautifulSoup(html, 'html.parser')
@@ -201,6 +203,7 @@ def search(word, counter, driver1, cvar):
                     advar = 'False'
                     djson(word, result, ads_counter, results_counter, description, cvar, advar)  # calls the function that passes everything to the json file
                     results_counter += 1
+                r = randint(150, 250)
 
                 if len(testresults) > 1:
                     for testresult in testresults[1]:
